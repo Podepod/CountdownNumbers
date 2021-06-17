@@ -1,4 +1,8 @@
 import random
+import re
+
+class TooManyNumbers(Exception):
+    pass
 
 class countdownNumbers:
     def __init__(self, nbr_numbers=6, min_target=100, max_target=999):
@@ -10,11 +14,48 @@ class countdownNumbers:
         self.target = 0
         self.numList = []
 
-    def start(self):
-        self.getBigNbrs()
-        self.getNbrs()
-        self.genTarget()
+    def start(self, genNewNbrs = True):
+        if genNewNbrs:
+            self.getBigNbrs()
+            self.getNbrs()
+            self.genTarget()
+        else:
+            self.getNbrs()
+            self.getTarget()
+
         self.printAll()
+
+    def getNbrs(self):
+        while True:
+            try:
+                self.numList = input(f"Enter the {self.nbr_small} numbers, seperated by a comma: ")
+                self.numList = re.split("\s*[,]\s*", self.numList)
+
+                self.numList = list(map(int, self.numList))
+
+                if not len(self.numList) == self.nbr_small:
+                    raise TooManyNumbers()
+
+            except ValueError:
+                print("A none valid number was listed.")
+
+            except TooManyNumbers:
+                print("Too many numbers where given.")
+
+            else:
+                break
+        
+
+    def getTarget(self):
+        while True:
+            try:
+                self.target = int(input("Enter the target value ({self.min}-{self.max}): "))
+            except ValueError:
+                print("Not a valid target.")
+            else:
+                break
+
+
 
     def getBigNbrs(self):
         self.nbr_big = int(input("How many big numbers would you like (0-4): "))
